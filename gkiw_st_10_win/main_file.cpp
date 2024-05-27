@@ -53,6 +53,11 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.2f, 0.8f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+bool w = false;
+bool s = false;
+bool a = false;
+bool d = false;
+
 float yaw = -90.0f;
 float pitch = 0.0f;
 
@@ -71,20 +76,6 @@ void error_callback(int error, const char* description) {
 }
 
 
-//void keyCallback(GLFWwindow* window,int key,int scancode,int action,int mods) {
-//    if (action==GLFW_PRESS) {
-//        if (key==GLFW_KEY_LEFT) speed_x=-PI/2;
-//        if (key==GLFW_KEY_RIGHT) speed_x=PI/2;
-//        if (key==GLFW_KEY_UP) speed_y=PI/2;
-//        if (key==GLFW_KEY_DOWN) speed_y=-PI/2;
-//    }
-//    if (action==GLFW_RELEASE) {
-//        if (key==GLFW_KEY_LEFT) speed_x=0;
-//        if (key==GLFW_KEY_RIGHT) speed_x=0;
-//        if (key==GLFW_KEY_UP) speed_y=0;
-//        if (key==GLFW_KEY_DOWN) speed_y=0;
-//    }
-//}
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	if (firstMouse) {
@@ -118,21 +109,21 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	cameraFront = glm::normalize(front);
 }
 
-
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod) {
-	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-
-		float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
-		if (key == GLFW_KEY_W)
-			cameraPos += cameraSpeed * cameraFront;
-		if (key == GLFW_KEY_S)
-			cameraPos -= cameraSpeed * cameraFront;
-		if (key == GLFW_KEY_A)
-			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		if (key == GLFW_KEY_D)
-			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (action == GLFW_PRESS) {
+		if (key==GLFW_KEY_W) w = true;
+		if (key==GLFW_KEY_S) s = true;
+		if (key==GLFW_KEY_A) a = true;
+		if (key==GLFW_KEY_D) d = true;
+	}
+	if (action==GLFW_RELEASE) {
+		if (key==GLFW_KEY_W) w = false;
+		if (key==GLFW_KEY_S) s = false;
+		if (key==GLFW_KEY_A) a = false;
+		if (key==GLFW_KEY_D) d = false;
 	}
 }
+
 
 void windowResizeCallback(GLFWwindow* window,int width,int height) {
     if (height==0) return;
@@ -208,18 +199,6 @@ void loadModel(int model, std::string plik) {
 		//cout <<endl
 	}
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-	//aiTextureType max18
-	/*
-	for (int i = 0; i < 19; i++) {
-		cout << i << " " << material->GetTextureCount((aiTextureType)i) << endl;
-	}*/
-	//material->
-
-	//for (int i = 0; i < material->GetTextureCount(aiTextureType_DIFFUSE); i++) {
-	   // aiString str;//nazwa pliku
-	   // material->GetTexture(aiTextureType_DIFFUSE, i,	&str);
-	   // cout << str.C_Str() << endl;
-	//}
 }
 
 //Procedura inicjująca
@@ -355,10 +334,23 @@ int main(void)
 	//Główna pętla
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
+		// Movment and rotation
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+
+		float cameraSpeed = 0.5f * deltaTime; // adjust accordingly
+		if (w == true)
+			cameraPos += cameraSpeed * cameraFront;
+		if (s == true)
+			cameraPos -= cameraSpeed * cameraFront;
+		if (a == true)
+			cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		if (d == true)
+			cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+
 		
+		// Scene
 		drawScene(window); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
 	}
