@@ -37,6 +37,90 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+
+struct Furniture
+{
+	std::string type;
+	float position[3];
+	float rotation[3];
+	float scale;
+};
+std::vector<Furniture> furnitureList;
+
+std::vector<Furniture> readCSV(const std::string& filename) {
+	std::ifstream file(filename);
+
+	if (!file.is_open()) {
+		std::cerr << "Failed to open file: " << filename << std::endl;
+		return furnitureList;
+	}
+
+	std::string line;
+	while (std::getline(file, line)) {
+		std::istringstream s(line);
+		std::string field;
+		Furniture furniture;
+
+		// Parse name
+		std::getline(s, furniture.type, ',');
+
+		// Parse location
+		std::string positonString;
+		std::getline(s, positonString, ',');
+
+		std::stringstream ss(positonString);
+		std::string item;
+
+		std::getline(ss, item, 'x');
+		furniture.position[0] = std::stof(item);
+
+		std::getline(ss, item, 'x');
+		furniture.position[1] = std::stof(item);
+
+		std::getline(ss, item, 'x');
+		furniture.position[2] = std::stoi(item);
+
+		// Parse rotation
+		std::string rotationString;
+		std::getline(s, rotationString, ',');
+
+		std::stringstream sb(rotationString);
+
+		std::getline(sb, item, 'x');
+		furniture.rotation[0] = std::stof(item);
+
+		std::getline(sb, item, 'x');
+		furniture.rotation[1] = std::stof(item);
+
+		std::getline(sb, item, 'x');
+		furniture.rotation[2] = std::stoi(item);
+
+
+		// Parse scale
+		std::getline(s, field, ',');
+		furniture.scale = std::stof(field);
+
+		furnitureList.push_back(furniture);
+	}
+
+	file.close();
+	return furnitureList;
+}
+
+void printRecords(const std::vector<Furniture>& furnitureList) {
+	for (const auto& record : furnitureList) {
+
+		std::cout << "Name: " << record.type
+			<< ", Dimensions1: " << record.position[0]
+			<< ", Dimensions2: " << record.rotation[2]
+			<< ", Value: " << record.scale
+			<< std::endl;
+
+}
+
 
 float aspectRatio=1;
 
@@ -283,7 +367,15 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	model3.readTexture("OBJ/Masa.png");
 	model3.loadModel("OBJ/Masa.fbx");
+	std::string filename = "config.txt";
+	std::vector<Furniture> furnitures = readCSV(filename);
 
+	if (!furnitures.empty()) {
+		printRecords(furnitures);
+	}
+	else {
+		std::cerr << "No records found or failed to read file." << std::endl;
+	}
 }
 
 
@@ -319,7 +411,17 @@ void drawScene(GLFWwindow* window) {
 	model1.drawModel(P, V, M, glm::vec3(0.0f, 0.15f, 0.0f), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.011f, 0.011f, 0.011f));
 	model2.drawModel(P, V, M, glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.002f, 0.002f, 0.002f));
 	model3.drawModel(P, V, M, glm::vec3(0.0f, 0.06f, 0.25f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.3f, 0.3f, 0.3f));
+	for (const auto& record : furnitureList) {
+		int obj_id = 0;
+		if (record.type == "BED") {
+			obj_id = 0;
+		}
+		else if (record.type == "CHAIR") {
+			obj_id = 1;
+		}
 
+		drawModel(obj_id, P, V, M, glm::vec3(0.0f, 0.075f, 0.0f), 10.0f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(record.scale, record.scale, record.scale));
+	}
 	//*****************************************************************
     glfwSwapBuffers(window); //Przerzuć tylny bufor na przedni
 }
