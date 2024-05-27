@@ -101,7 +101,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod) {
 	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
 
-		float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
+		float cameraSpeed = 0.5f * deltaTime; // adjust accordingly
 		if (key == GLFW_KEY_W)
 			cameraPos += cameraSpeed * cameraFront;
 		if (key == GLFW_KEY_S)
@@ -225,28 +225,12 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Capture the mouse
 
-	//loadModel(std::string("hill.obj"));
-	//loadModel(std::string("walls1.fbx"));
-	//loadModel(std::string("CastleWall.fbx"));
-	//loadModel(std::string("Castle.fbx"));
-	//loadModel(std::string("WonderWalls_SecondAge.fbx")); //odwrocone
-	//loadModel(std::string("cos1.fbx"));
-	//loadModel(std::string("Modularcastle.fbx"));  //jakis dziwny
-	//loadModel(std::string("walls.fbx")); //jakis maly fragment
-	//loadModel(std::string("astle.fbx")); //jest jakis error
-	//loadModel(std::string("castle1.fbx")); //nie dziala
-	//loadModel(std::string("Barracks.fbx")); // dziala ale maly
-	//loadModel(std::string("castel_wall.fbx")); // nie dziala 
-	//loadModel(std::string("scene.fbx")); // nire dziala 
-	//loadModel(std::string("spears.fbx")); // dziala
-	//loadModel(std::string("stonetower.fbx")); // dziala
-	//loadModel(std::string("stonewall.fbx"));
 
 	texs[0] = readTexture("white.png");
 	loadModel(0, std::string("OBJ/Free_Mug.obj"));
 
 	texs[1] = readTexture("OBJ/TX_Table_1_1_Base_color.png");
-	loadModel(1, std::string("OBJ/Table_Chair_1.obj"));
+	loadModel(1, "OBJ/Table_Chair_1.obj");
 	
 
 }
