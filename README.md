@@ -8,3 +8,7 @@ The Interior Decorator project is a visualization tool that allows users to see 
 
 - **OpenGL**: For rendering the 3D graphics.
 - **Assimp**: For importing and managing 3D model files.
+
+## Sources
+- [turbosquid.com](https://www.turbosquid.com/)
+- [sketchfab.com](https://sketchfab.com/)
